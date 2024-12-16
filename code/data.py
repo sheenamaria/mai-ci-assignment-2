@@ -10,7 +10,9 @@ class Data:
         if train_split + val_split + test_split != 100:
             raise ValueError("Train, validation, and test split percentages must sum to 100")
         
-        self.splits = (train_split, val_split, test_split)
+        self.splits = {'train': train_split,
+                       'val': val_split,
+                       'test': test_split}
 
         # Load .mat file
         mat_data = sio.loadmat(file_path)
@@ -34,25 +36,9 @@ class Data:
             X_test = None
             y_test = None
         
-        # Further split train_val into train and validation
-        if val_split > 0:
-            val_relative_size = val_split / (train_split + val_split)
-            X_train, X_val, y_train, y_val = train_test_split(
-                X_train_val, y_train_val, test_size=val_relative_size,
-                random_state=42
-            )
-        else:
-            X_train = X_train_val
-            y_train = y_train_val
-            X_val = None
-            y_val = None
-        
         # Store splits as DataFrames with numeric index
-        self.train_data = pd.DataFrame(X_train)
-        self.train_labels = pd.DataFrame(y_train)
-        
-        self.val_data = pd.DataFrame(X_val)
-        self.val_labels = pd.DataFrame(y_val)
+        self.train_val_data = pd.DataFrame(X_train_val)
+        self.train_val_labels = pd.DataFrame(y_train_val)
         
         self.test_data = pd.DataFrame(X_test)
         self.test_labels = pd.DataFrame(y_test)
