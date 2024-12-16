@@ -35,46 +35,46 @@ class CNN:
     
     def _build_model(self, input_shape, num_classes):
 
-        self.model = Sequential()
+        model = Sequential()
         
         # Convolutional blocks
         for i, filter_size in enumerate(self.filter_sizes):
             if i == 0:
                 # First layer needs input_shape
-                self.model.add(Input(input_shape))
+                model.add(Input(input_shape))
 
-                self.model.add(Conv2D(
+                model.add(Conv2D(
                     filters=filter_size, 
                     kernel_size=(3, 3), 
                     activation=self._activation_map[self.hidden_layer_activation]
                 ))
             else:
                 # Subsequent layers
-                self.model.add(Conv2D(
+                model.add(Conv2D(
                     filters=filter_size, 
                     kernel_size=(3, 3),
                     activation=self._activation_map[self.hidden_layer_activation]
                 ))
             
             # Max pooling layer
-            self.model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
         
         # Flatten layer
-        self.model.add(Flatten())
+        model.add(Flatten())
         
         # Fully connected layer
-        self.model.add(Dense(
+        model.add(Dense(
             self.dense_layer_size, 
             activation=self.hidden_layer_activation
         ))
         
         # Output layer
-        self.model.add(Dense(
+        model.add(Dense(
             num_classes, 
             activation=self._activation_map[self.output_layer_activation]
         ))
         
-        return self.model
+        return model
     
     def fit(self, dataset, cost_function='categorical_crossentropy', max_epochs=50, learning_rate=0.01, k_folds=5):
         # Reshape data for CNN (add channel dimension)
@@ -127,10 +127,10 @@ class CNN:
             if final_val_accuracy > best_val_accuracy:
                 best_val_accuracy = final_val_accuracy
                 best_model = model
-                best_history = history.history
+                best_history = history
             
             # Optional: Print fold performance (can be removed if not needed)
-            print(f"Fold {fold} - Best Validation Accuracy: {final_val_accuracy:.4f}")
+            # print(f"Fold {fold} - Best Validation Accuracy: {final_val_accuracy:.4f}")
         
         self.model = best_model
         # Return the history of the best-performing model
